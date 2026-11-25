@@ -1,26 +1,117 @@
 @import "tailwindcss";
 
+/* Low-sensory, calming palette: warm off-white, deep slate text, soft sage + teal. */
+@theme {
+  --color-canvas: #faf7f1;
+  --color-paper: #fffdf9;
+  --color-ink: #2a3a44;
+  --color-ink-soft: #4b5e69;
+  --color-line: #e2dccf;
+
+  --color-sage-50: #f1f6f3;
+  --color-sage-100: #e0ece5;
+  --color-sage-200: #c3d9cd;
+  --color-sage-300: #9fc0b0;
+  --color-sage-500: #5a8a77;
+  --color-sage-600: #46705f;
+  --color-sage-700: #38594c;
+  --color-sage-800: #2d463d;
+
+  --color-calm-50: #eff7f7;
+  --color-calm-100: #d9eeee;
+  --color-calm-200: #b4dcdc;
+  --color-calm-600: #2f7a7d;
+  --color-calm-700: #276265;
+
+  --color-sand-50: #f8f3e8;
+  --color-sand-100: #f0e7d2;
+  --color-sand-200: #e4d4b0;
+
+  --color-clay-50: #fbf1ec;
+  --color-clay-100: #f3e0d6;
+  --color-clay-700: #8a4a35;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-canvas);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+/* Clear, calm keyboard focus */
+:focus-visible {
+  outline: 3px solid var(--color-calm-600);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Large touch targets for interactive controls */
+button,
+[role="button"],
+select,
+summary {
+  touch-action: manipulation;
+}
+
+/* Reduced-motion support: remove movement for anyone who asks for it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Gentle pop used by the token board (disabled automatically by the rule above) */
+@keyframes soft-pop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.soft-pop {
+  animation: soft-pop 0.5s ease-out both;
+}
+
+/* Print: clean visual schedules and plans on white paper */
+@page {
+  margin: 14mm;
+}
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  .avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
