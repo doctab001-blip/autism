@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s · HomePath Autism",
   },
   description:
-    "Educational, evidence-informed home-therapy frameworks for autistic children, tailored to age group and DSM-5 support level. Data stays in your browser.",
+    "Educational, evidence-informed home support frameworks for autistic children (skill-building and communication access, not a cure), tailored to age group and DSM-5 support level. Data stays in your browser.",
   applicationName: "HomePath Autism",
   robots: { index: true, follow: true },
 };

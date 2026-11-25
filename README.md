@@ -6,7 +6,8 @@ Next.js (App Router) · TypeScript · Tailwind CSS v4. Deploys to Vercel with de
 | Route | What it does |
 |---|---|
 | `/` | Clinical blueprint, sample daily routine (printable visual schedule), searchable 9-profile comparison matrix |
-| `/pillars` | Speech & AAC, Behavior (meltdown vs tantrum), Sensory & OT, Social/Life Skills (backward chaining) |
+| `/pillars` | Speech & AAC, Behavior (meltdown vs tantrum), Sensory & OT, Social/Life Skills (backward chaining); each therapy card has a 7-point prognosis & execution structure |
+| `/safety` | Co-occurring conditions screen, treatments to avoid & red flags, printable questions to ask any provider |
 | `/environment` | 6-point home setup checklist + sensory diet builder (both saved locally, printable) |
 | `/tracker` | ABC tracker with function detection, level-calibrated replacement strategies, CSV export |
 | `/board` | Full-screen First–Then + 5-star token board with soft Web Audio chimes |

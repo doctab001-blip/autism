@@ -11,6 +11,7 @@ import {
   btnPrimary,
   btnSecondary,
 } from "@/components/ui";
+import { PrognosisCard } from "@/components/PrognosisCard";
 import { useProfile } from "@/context/ProfileContext";
 import { FUNCTION_META, PILLAR_META, type ClinicalProfile } from "@/data/clinicalMatrix";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -169,6 +170,7 @@ function SpeechModule({ profile }: { profile: ClinicalProfile }) {
           <BulletList items={profile.speech.aac} className="text-sm" />
         </Card>
       </div>
+      <PrognosisCard title="Speech & AAC" data={profile.prognosis.speech} />
       <PromptTracker />
     </div>
   );
@@ -216,6 +218,8 @@ function BehaviorModule({ profile }: { profile: ClinicalProfile }) {
           </div>
         </div>
       </Card>
+
+      <PrognosisCard title="ABA / Positive Behavior Support" data={profile.prognosis.behavior} />
 
       <Card>
         <h3 className="text-xl font-semibold text-sage-800">Meltdown vs tantrum</h3>
@@ -336,6 +340,7 @@ function SensoryModule({ profile }: { profile: ClinicalProfile }) {
           tasks, not only after distress.
         </p>
       </Card>
+      <PrognosisCard title="Occupational Therapy: Sensory & ADLs" data={profile.prognosis.sensory} />
       <div className="grid gap-6 lg:grid-cols-3">
         {groups.map((g) => (
           <Card key={g.title}>

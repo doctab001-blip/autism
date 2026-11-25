@@ -10,6 +10,7 @@ const NAV = [
   { href: "/environment", label: "Environment" },
   { href: "/tracker", label: "ABC Tracker" },
   { href: "/board", label: "Child Board" },
+  { href: "/safety", label: "Safety" },
 ];
 
 export function SiteHeader() {

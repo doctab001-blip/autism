@@ -302,9 +302,10 @@ export function HomeView() {
     <div className="space-y-14">
       <div className="print:hidden">
         <PageTitle eyebrow="Parent-led clinical therapy portal" title="HomePath Autism">
-          Evidence-informed home therapy frameworks, shaped by a multidisciplinary lens (BCBA, SLP,
-          OT) and tailored to your child’s age group and DSM-5 support level. Pick the profile above
-          and every page adapts.
+          Evidence-informed home support frameworks, shaped by a multidisciplinary lens (BCBA, SLP,
+          OT) and tailored to your child’s age group and DSM-5 support level. Autism is a lifelong
+          neurodevelopmental difference: these tools build skills, communication access and comfort,
+          they do not aim to cure it. Pick the profile above and every page adapts.
         </PageTitle>
         <div className="flex flex-wrap gap-3">
           <Link href="/pillars" className={btnPrimary}>

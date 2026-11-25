@@ -5,7 +5,9 @@
  * Content is an educational, parent-coaching framework drawn from commonly used,
  * evidence-informed approaches (NDBIs, functional communication training, PECS/AAC,
  * positive behaviour support, sensory-based strategies, backward chaining).
- * It is NOT an individual treatment plan; doses are typical ranges to agree with a
+ * Autism is a lifelong neurodevelopmental difference: this content builds skills, supports and
+ * communication access rather than aiming to cure or remove autism.
+ * It is NOT an individual support plan; doses are typical ranges to agree with a
  * child's own team (BCBA / SLP / OT / paediatrician).
  */
 
@@ -135,6 +137,22 @@ export interface ClinicalProfile {
   adl: { headline: string; skills: AdlSkill[] };
   social: { headline: string; goals: string[]; strategies: string[] };
   routine: RoutineBlock[];
+  prognosis: Record<PrognosisPillar, Prognosis>;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Prognosis & execution structure (evidence tier, dosage, timelines, assent)    */
+/* -------------------------------------------------------------------------- */
+
+export type PrognosisPillar = "behavior" | "speech" | "sensory";
+
+export interface Prognosis {
+  evidence: { tier: "A" | "B"; label: string; note: string };
+  home: { steps: string[]; dosage: string };
+  firstEffect: string;
+  timeline: { weeks4to12: string; months3to6: string; milestone: string };
+  maintenance: { lasting: string; regression: string[]; ongoing: string };
+  assent: string;
 }
 
 export function profileKey(age: AgeGroup, level: SupportLevel): ProfileKey {
@@ -162,7 +180,7 @@ const REPLACEMENT_BY_LEVEL: Record<SupportLevel, Record<BehaviorFunction, string
     tangible:
       "Teach a reliable request (card, sign, SGD or phrase) for the item and honour it quickly at first. Then add “wait” with a timer and a second, preferred activity so waiting is rewarded.",
     attention:
-      "Teach a simple attention request (tap-and-point card, “look” sign/button). Give planned, frequent attention for calm behavior and brief, neutral responses to the problem behavior.",
+      "Teach a simple attention request (tap-and-point card, “look” sign/button). Give planned, frequent attention for calm behavior and brief, neutral responses to the distress behavior.",
     sensory:
       "Provide scheduled, high-quality access to the sensory input (swing, chew, vibration) and teach requesting it. Block only if unsafe, and always redirect to a matched alternative.",
   },
@@ -241,7 +259,7 @@ const TANTRUM_BY_LEVEL: Record<SupportLevel, string[]> = {
 
 type SpecificProfile = Omit<
   ClinicalProfile,
-  "key" | "age" | "level" | "title" | "behavior"
+  "key" | "age" | "level" | "title" | "behavior" | "prognosis"
 > & {
   behavior: { headline: string; priorities: string[]; proactive: string[] };
 };
@@ -378,7 +396,7 @@ const RAW: Record<ProfileKey, SpecificProfile> = {
     },
     behavior: {
       headline: "Replace crying, hitting and dropping with a reliable request",
-      priorities: ["Replace problem behavior with one reliable request", "Tolerate brief waits (5–30 seconds)", "Reduce escape behavior during demands"],
+      priorities: ["Build one reliable request that replaces distress behavior", "Tolerate brief waits (5–30 seconds)", "Reduce the need for escape during demands by making tasks easier to start"],
       proactive: [
         "Use a 3–4 picture visual schedule",
         "Give high-rate reinforcement early (every correct response)",
@@ -464,7 +482,7 @@ const RAW: Record<ProfileKey, SpecificProfile> = {
       proactive: [
         "Keep the same routine in the same order daily with an object schedule",
         "Make the home safe: door alarms, padded corners, secured furniture",
-        "Give free access to favourite items throughout the day (reduces motivation for problem behavior)",
+        "Give free access to favourite items throughout the day (reduces the need for distress behavior)",
         "Teach the calming routine when the child is already calm",
       ],
     },
@@ -971,6 +989,252 @@ const RAW: Record<ProfileKey, SpecificProfile> = {
 };
 
 /* -------------------------------------------------------------------------- */
+/* Prognosis content, tailored by age group × support level                     */
+/* Timelines are typical, not guarantees. Every child's pace is different.       */
+/* -------------------------------------------------------------------------- */
+
+const TIER_A_LABEL = "Tier A: Strong Support (Function-Based & Naturalistic)";
+const TIER_B_LABEL = "Tier B: Comfort, Regulation & Adaptive Participation";
+
+const BEHAVIOR_STEPS: Record<AgeGroup, string[]> = {
+  early: [
+    "Give a 2-minute heads-up with a visual timer, then show a First–Then card (“First shoes, then park”).",
+    "Before the child is upset, offer the replacement request (break card, sign or word) and honour it straight away.",
+    "Give the promised item or praise within 2–3 seconds of a calm transition.",
+    "If distress happens, jot one quick ABC note in the tracker; do not problem-solve in the moment.",
+  ],
+  school: [
+    "Preview the visual schedule each morning and flag any change in advance.",
+    "Break one hard task into a short chunk, then offer an earned break from the child’s own break menu.",
+    "Follow with specific praise or a token right after the chunk is done.",
+    "Add one ABC note when something hard happens, and review the pattern weekly.",
+  ],
+  teen: [
+    "Plan the day together: let the teen choose the order of tasks where possible.",
+    "Agree a discreet break signal (cue card, phone timer, or a phrase) and always honour it.",
+    "Use short, specific feedback privately rather than in front of others.",
+    "Hold a 5-minute weekly check-in: what helped, what didn’t, what to change.",
+  ],
+};
+
+const BEHAVIOR_DOSE: Record<SupportLevel, string> = {
+  level1: "3 short practice moments a day, 5–10 minutes each (about 20 minutes total), built into existing routines such as leaving the house, mealtimes and bedtime.",
+  level2: "4 embedded practice blocks of about 10 minutes (about 40 minutes total) plus visuals available all day. Aim for 5–10 chances to use the break or request signal daily.",
+  level3: "5–6 very short blocks of 5–10 minutes (about 45 minutes total), with the replacement signal honoured every time at first. Keep the daily routine as predictable as possible.",
+};
+
+const BEHAVIOR_FIRST: Record<SupportLevel, string> = {
+  level1: "A slightly shorter gap between the warning and moving on, or less protest at one or two transitions a day. Small changes count.",
+  level2: "The child touches or reaches for the break card (even with a prompt) earlier in the build-up, or settles a little sooner after using it.",
+  level3: "Brief moments of looking at or reaching for the symbol or object, and calming a little faster after the signal is honoured.",
+};
+
+const BEHAVIOR_TIMELINE: Record<SupportLevel, { weeks4to12: string; months3to6: string; milestone: string }> = {
+  level1: {
+    weeks4to12: "Transitions that used to stall now take a prompt or two. The child begins to use the break request before the peak of distress.",
+    months3to6: "Several daily transitions go smoothly with visuals alone, and waiting or hearing “not now” is tolerated more often.",
+    milestone: "3 of 5 daily transitions with one prompt or fewer, and the ABC tracker shows shorter or less frequent episodes.",
+  },
+  level2: {
+    weeks4to12: "The child uses the break signal on their own at least once a day and accepts a short wait (5–10 seconds) before a break or item.",
+    months3to6: "The signal replaces most of the earlier distress behavior in the main routines, and the wait can be lengthened step by step.",
+    milestone: "Independent break or request use in 3 or more daily situations, with fewer episodes that need adult safety support.",
+  },
+  level3: {
+    weeks4to12: "Reaching for or handing over the symbol happens with light prompting, and recovery after distress becomes quicker.",
+    months3to6: "The child uses one dependable signal in the most important routines, and episodes are shorter or less intense.",
+    milestone: "One reliable, honoured request signal used across two or more settings, with a clearly shorter recovery time in the tracker.",
+  },
+};
+
+const SPEECH_STEPS: Record<AgeGroup, string[]> = {
+  early: [
+    "Sit face-to-face at eye level and follow what the child is already interested in.",
+    "Copy their action or sound, then add one small new thing (“car” → “red car”).",
+    "Create a reason to ask: clear containers, small portions or a “forgotten” spoon. Wait 5 seconds with an expectant look.",
+    "Model, then offer a light prompt, and give the item straight away so asking feels worthwhile.",
+  ],
+  school: [
+    "Choose one favourite activity (game, building, snack prep) and make it a daily communication slot.",
+    "Model one step up from where the child is (a sign or picture becomes a word, a word becomes two).",
+    "Pause and wait before helping so the child has time to start.",
+    "Use the same words and pictures at home and school so the child hears one consistent system.",
+  ],
+  teen: [
+    "Pick topics and activities the teen cares about, and offer genuine choices.",
+    "Model age-appropriate messages on the device or in words, without testing or quizzing.",
+    "Wait for the teen to start before helping, and accept any form of communication as a real message.",
+    "Practise short, real-life requests (ordering food, asking for help or a break) in actual settings.",
+  ],
+};
+
+const SPEECH_LEVEL_STEP: Record<SupportLevel, string> = {
+  level1: "Spoken language is the main route. Keep a pocket picture or text option for stressful moments.",
+  level2: "Use speech together with signs, pictures or a device, and model on the device while you talk.",
+  level3: "Treat AAC (pictures, objects, switch or device) and gesture as the main voice. Model on it throughout the day, even when the child does not respond.",
+};
+
+const SPEECH_DOSE: Record<SupportLevel, string> = {
+  level1: "3 play blocks of 15–20 minutes (about 60 minutes) plus 15–20 communication chances inside each daily routine.",
+  level2: "3 blocks of about 20 minutes plus 10–15 modelled or tempted communication chances in each routine (meals, bath, dressing, outings).",
+  level3: "4 short blocks of 10–15 minutes plus AAC modelled during all routines. Frequent, tiny chances work better than a single long session.",
+};
+
+const SPEECH_FIRST: Record<SupportLevel, string> = {
+  level1: "More checking back: glancing at your face after an action, sharing a toy or pointing to show you something.",
+  level2: "More eye gaze toward you or the board, reaching toward the picture or device, or copying a sound or sign.",
+  level3: "More looking at you or at the symbols, touching or reaching for the AAC option, and staying with you for a few seconds longer.",
+};
+
+const SPEECH_TIMELINE: Record<SupportLevel, { weeks4to12: string; months3to6: string; milestone: string }> = {
+  level1: {
+    weeks4to12: "More frequent spontaneous comments and requests, longer back-and-forth turns in play.",
+    months3to6: "Longer sentences and more questions asked and answered, with joint attention seen across settings.",
+    milestone: "5 or more joint-attention acts (pointing, showing, giving) in a 10-minute play block and a new 3–4-word phrase used spontaneously.",
+  },
+  level2: {
+    weeks4to12: "The child makes requests with a word, sign, picture or device with decreasing prompts.",
+    months3to6: "A growing set of 10–20 reliable requests and the first two-step combinations (“want + item”).",
+    milestone: "At least 3 consistent requests used without prompts in different routines, tracked in the Requesting practice tracker (80% independent across 3 sessions).",
+  },
+  level3: {
+    weeks4to12: "The child begins to choose between two options on request and touches or reaches for the AAC option with light help.",
+    months3to6: "A few dependable requests (food, play, break, “more”) are made with minimal prompting.",
+    milestone: "2–3 requests made independently with the same system at home and in one other setting.",
+  },
+};
+
+const SENSORY_STEPS: Record<AgeGroup, string[]> = {
+  early: [
+    "Offer heavy-work play before a demanding moment (carrying a laundry basket, wall pushes, animal walks, pushing a small cart).",
+    "Let the child choose between two movement or pressure options and keep sessions playful.",
+    "Offer a quiet, low-input corner with soft items after noisy or busy events.",
+    "Note which activities the child enjoys and which help calm, and repeat those at the same times each day.",
+  ],
+  school: [
+    "Add a short movement or heavy-work break before homework or other demanding tasks (wall push-ups, carrying books, chair push-ups).",
+    "Build a small sensory menu with the child (chewy, fidget, headphones, weighted lap pad) that they can choose from.",
+    "Schedule one calming activity after school before any demands.",
+    "Share the same menu with school so the child has the same options in both places.",
+  ],
+  teen: [
+    "Co-create a self-regulation toolkit with the teen (exercise, resistance bands, headphones, a quiet space, preferred music).",
+    "Build movement into the day at set points, such as a walk, gym session or chores with resistance.",
+    "Let the teen decide when to use each tool and keep it discreet and age-respectful.",
+    "Review weekly what helped and replace what didn’t.",
+  ],
+};
+
+const SENSORY_DOSE: Record<SupportLevel, string> = {
+  level1: "2–3 sessions a day of 5–10 minutes (about 20 minutes), timed before the tasks that are hardest.",
+  level2: "3–4 sessions a day of about 10 minutes (about 40 minutes), plus a calming option available on request.",
+  level3: "4–6 short sessions of 5–10 minutes, with sensory options freely available throughout the day. Agree amounts and equipment with the child’s occupational therapist.",
+};
+
+const SENSORY_FIRST: Record<SupportLevel, string> = {
+  level1: "Faster calming after heavy work (for example settling in about 5 minutes instead of 15) or starting a task with less resistance.",
+  level2: "Quicker recovery after an activity and the child begins choosing a favourite sensory activity without being prompted.",
+  level3: "A calmer body after heavy work, such as softer muscle tone, easier breathing or less distress for a short while afterwards.",
+};
+
+const SENSORY_TIMELINE: Record<SupportLevel, { weeks4to12: string; months3to6: string; milestone: string }> = {
+  level1: {
+    weeks4to12: "Fewer overload build-ups around noise, crowds or busy days, and easier starts to demanding tasks.",
+    months3to6: "The child asks for or chooses a regulation tool on their own and recovers from overload sooner.",
+    milestone: "A self-chosen regulation tool used at least once on most days, with recovery time in the tracker shortened by about a third.",
+  },
+  level2: {
+    weeks4to12: "Predictable daily sensory slots reduce afternoon or after-school distress for many children.",
+    months3to6: "The child requests a preferred sensory activity (picture, sign or word) and accepts some new sensory experiences.",
+    milestone: "Child requests or selects a sensory break at least once daily and tolerates one previously avoided input with support.",
+  },
+  level3: {
+    weeks4to12: "Calmer periods after heavy work and fewer long-lasting distress episodes linked to sensory overload.",
+    months3to6: "Better participation in key routines (meals, hygiene, travel) because discomfort is anticipated and eased.",
+    milestone: "One or two key routines (e.g. tooth-brushing or travel) completed with less distress using a planned sensory preparation.",
+  },
+};
+
+function buildPrognosis(age: AgeGroup, level: SupportLevel): Record<PrognosisPillar, Prognosis> {
+  return {
+    behavior: {
+      evidence: {
+        tier: "A",
+        label: TIER_A_LABEL,
+        note: "Function-based positive behaviour support and communication training have strong support for building skills and reducing distress by meeting the need behind the behavior.",
+      },
+      home: { steps: BEHAVIOR_STEPS[age], dosage: BEHAVIOR_DOSE[level] },
+      firstEffect: BEHAVIOR_FIRST[level],
+      timeline: BEHAVIOR_TIMELINE[level],
+      maintenance: {
+        lasting:
+          "Replacement skills tend to hold when the child’s needs keep being met and the skill keeps being used and honoured. They are strengthened by daily use, not “finished” after a set number of weeks.",
+        regression: [
+          "Extinction burst (weeks 1–2): when an old behavior stops getting the same result, it can briefly get louder or more frequent before it settles. Keep honouring the new request signal and keep everyone safe. If there is any risk of injury, pause the plan and contact your behavior analyst.",
+          "Illness, poor sleep, pain, or big changes (new school, new sibling, travel) can bring older behaviors back for a while. This is a signal for more support, not a failure. Return to an easier step and rebuild.",
+          "Situational mutism or reduced speech can appear when the child is unwell or overloaded. Offer a non-speaking way to communicate and expect speech to return once the load eases.",
+        ],
+        ongoing:
+          "Keep visuals, breaks and the request signal in place as long as they help, and fade them slowly. Plan a quick “booster” week of extra practice after any setback.",
+      },
+      assent:
+        "“No” and “break” are always valid messages and are respected. Never suppress harmless stimming (hand-flapping, rocking, scripting, humming); only redirect if it is unsafe. If the child says no, or shows early distress (covering ears, pulling away, going quiet, rising vocal tone), stop the demand, give the break, and return to an easier step. Respecting these signals makes it safer for the child to try again. " +
+        (age === "teen"
+          ? "Involve the teen in setting goals and keep plans dignified and age-respectful."
+          : age === "early"
+            ? "At this age, watch body language closely and pause early, before the peak."
+            : "Offer the child real choices within each task and let them help pick the break menu."),
+    },
+    speech: {
+      evidence: {
+        tier: "A",
+        label: TIER_A_LABEL,
+        note: "Naturalistic developmental behavioral interventions (NDBIs) and AAC have strong support for building communication. AAC does not prevent speech.",
+      },
+      home: { steps: [...SPEECH_STEPS[age], SPEECH_LEVEL_STEP[level]], dosage: SPEECH_DOSE[level] },
+      firstEffect: SPEECH_FIRST[level],
+      timeline: SPEECH_TIMELINE[level],
+      maintenance: {
+        lasting:
+          "Communication skills usually stay once they are learned and used, and grow when partners keep modelling and responding. They are retained best when practised across people and places.",
+        regression: [
+          "Speech or signing can drop during illness, pain, anxiety or overload (situational mutism). This is reduced access to a skill, not lost ability. Keep AAC or another way to communicate available and avoid pressure to “say it”.",
+          "Skills can look uneven: a child may use a word one day and not the next. Keep modelling and avoid treating it as a test.",
+          "Big changes (new school, therapist change, moves) can pause progress for several weeks. Re-use the earlier steps and pictures to rebuild confidence.",
+        ],
+        ongoing:
+          "Keep modelling and keep AAC available for as long as it helps, including after speech grows. Review goals every 3 months with the speech and language therapist.",
+      },
+      assent:
+        "Any form of communication counts: words, signs, pictures, device use, gaze, pushing away. Treat “no” as a real answer and honour it. Never force eye contact (“look at me”), never withhold AAC to make a child speak, and never hold back favourite items just to provoke speech. Follow the child’s lead, and stop or switch to a favourite activity if they turn away, become distressed, or disengage. Harmless stimming and scripting are communication or regulation and are not to be stopped.",
+    },
+    sensory: {
+      evidence: {
+        tier: "B",
+        label: TIER_B_LABEL,
+        note: "Sensory tools and heavy-work routines support comfort, regulation and participation in daily activities. They do not treat core autism traits, and the research for them is more limited than for Tier A approaches.",
+      },
+      home: { steps: SENSORY_STEPS[age], dosage: SENSORY_DOSE[level] },
+      firstEffect: SENSORY_FIRST[level],
+      timeline: SENSORY_TIMELINE[level],
+      maintenance: {
+        lasting:
+          "Benefits last while the routine continues. A sensory diet works like nutrition or exercise: it helps while you keep doing it, and its effects fade if it stops.",
+        regression: [
+          "Needs change with growth, puberty, stress, illness and seasons, so an activity that worked may need replacing. This is normal.",
+          "Pain, constipation, poor sleep and infections can look like sensory difficulty. If distress rises suddenly, check with your paediatrician before changing the plan.",
+          "Some children’s sensory tolerance varies day to day. Keep the options available rather than expecting a steady response.",
+        ],
+        ongoing:
+          "Plan the sensory routine as a long-term part of the day and review it with the occupational therapist every 3–6 months or when the child’s needs change.",
+      },
+      assent:
+        "The child chooses and can stop at any time. Never force touch, brushing, pressure or any sensory input. Stop the moment there are signs of distress (pulling away, tensing, crying, covering ears or eyes, going quiet). Stimming such as flapping, rocking or spinning is a valid way to regulate and is not suppressed unless it is unsafe; offer more options rather than taking it away. Introduce brushing, weighted items or compression only under occupational therapist guidance.",
+    },
+  };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Assemble the full 3×3 matrix                                                */
 /* -------------------------------------------------------------------------- */
 
@@ -996,6 +1260,7 @@ function build(age: AgeGroup, level: SupportLevel): ClinicalProfile {
     adl: raw.adl,
     social: raw.social,
     routine: raw.routine,
+    prognosis: buildPrognosis(age, level),
   };
 }
 

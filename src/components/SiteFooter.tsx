@@ -11,7 +11,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl space-y-4 px-4 py-8 text-sm text-ink-soft">
         <p className="text-base text-ink">
           <strong>Medical disclaimer.</strong> HomePath Autism offers educational parent-coaching
-          frameworks. It does not replace an individual diagnosis, a personalised treatment plan from
+          frameworks. It does not replace an individual diagnosis, a personalised support plan from
           your child’s clinicians, or emergency behavioral crisis care.
         </p>
         <p>
